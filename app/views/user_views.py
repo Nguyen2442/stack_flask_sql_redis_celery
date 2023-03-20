@@ -13,12 +13,12 @@ user_views = Blueprint('user_api', __name__)
 
 class UserView(MethodView):
     def get(self):
-            user = User.query.all()
-            list_users = [user.format() for user in user]
-            return jsonify({
-                'message': True,
-                'user':list_users,
-            }), HTTP_200_OK
+        user = User.query.all()
+        list_users = [user.format() for user in user]
+        return jsonify({
+            'message': True,
+            'user': list_users,
+        }), HTTP_200_OK
         
     
     @validate()
@@ -37,32 +37,25 @@ class UserView(MethodView):
             'message': "User validated",
             'user': "meomeo"
         }), HTTP_201_CREATED
-        # username = request.json['username']
-        # password = request.json['password']
 
-        # if len(username)<3:
-        #     return jsonify({'message': 'Username must be at least 3 characters long'}), HTTP_400_BAD_REQUEST
+    @validate()
+    def put(self, body: UserInput):
+        user_info = dict(
+            username=body.username,
+        )
+        existing_user = User.query.filter(id=id).first()
+        if not existing_user:
+            return jsonify({
+                'message': "User not found",
+                'user': "meomeo"
+            }), HTTP_404_NOT_FOUND
+        partial_update_object(existing_user, user_info)
+        db.session.commit()
 
-        # if not username.isalnum() or " " in username:
-        #     return jsonify({'message': 'Username must be alphanumeric and contain no spaces'}), HTTP_400_BAD_REQUEST
-
-        # if len(password) < 8:
-        #     return jsonify({'message': 'Password must be at least 8 characters long'}), HTTP_400_BAD_REQUEST
-
-        # user = User.query.filter_by(username=username).first()
-        # if user is not None:
-        #     return jsonify({'message': 'Username already exists'}), HTTP_400_BAD_REQUEST
-        # else:
-        #     new_user = User(username=username, password=password, isAdmin=isAdmin)
-        #     db.session.add(new_user)
-        #     db.session.commit()
-
-        # return jsonify({
-        #     'message': "User created",
-        #     'user': {
-        #         'username': new_user.username,
-        #     }
-        # }), HTTP_201_CREATED
+        return jsonify({
+            'message': "User is updated",
+            'success': True
+        }), HTTP_200_OK
     
 
-user_views.add_url_rule('/api/v1/user', view_func=UserView.as_view('user_view'), methods=['GET', 'POST'])
+user_views.add_url_rule('/api/v1/user', view_func=UserView.as_view('user_view'), methods=['GET', 'POST', 'PUT'])

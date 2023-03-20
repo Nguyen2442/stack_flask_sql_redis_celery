@@ -5,12 +5,11 @@ from app.core.schema.api_response import get_error_code
 
         
 
-class UserInput(BaseModel):
-    username: str
+class AuthLoginInput(BaseModel):
     email: str
     password: str
 
-    # @validator('username')
+    # @validator('')
     # def check_username(cls, v):
     #     if v.isdigit():
     #         print(100*" false ")
@@ -18,7 +17,3 @@ class UserInput(BaseModel):
     #     else:
     #         print(10*"here ? ")
     #         raise ErrorResponseException(**get_error_code(3001))
-
-
-class UserUpdateInput(BaseModel):
-    username: Optional[str]
